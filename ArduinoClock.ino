@@ -25,7 +25,18 @@ int mode = 0;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void setup() {
+	lcd.begin(16, 2);
+	lcd.write("Even geduld...");
 
+	pinMode(6, OUTPUT);
+	pinMode(7, INPUT);
+	digitalWrite(7, HIGH);
+	pinMode(8, INPUT);
+	digitalWrite(8, HIGH);
+	pinMode(9, INPUT);
+	digitalWrite(9, HIGH);
+	pinMode(10, INPUT);
+	digitalWrite(10, HIGH);
 }
 
 void loop() {
