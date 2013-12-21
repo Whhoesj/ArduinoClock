@@ -13,16 +13,34 @@ const int pinLightSensor = A0;
 const String dayOfWeek[] =
 	{"Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"};
 
-boolean buttonStateBack = false;
-boolean buttonStateEnter = false;
-boolean buttonStatePrevious = false;
-boolean buttonStateNext = false;
+int buttonStateBack = LOW;
+int buttonStateEnter = LOW;
+int buttonStatePrevious = LOW;
+int buttonStateNext = LOW;
 
+long currentMillis;
 int editHour, editMinute, editSecond, editDay, editMonth, editYear, editDOW;
 int lightVal = 255;
+int lightMin = 0;
+int lightMax = 255;
+long lightTimeout = 5000;
+long lightMillis;
 int mode = 0;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void checkBacklight() {
+	if (currentMillis - lightMillis > lightTimeout) {
+		analogWrite(pinBacklight, lightMin);
+	} else {
+		lightVal = map(analogRead(pinLightSensor), 1022, 0, lightMin, lightMax);
+		analogWrite(pinBacklight, lightVal);
+	}
+}
+
+void checkButtons() {
+
+}
 
 void setup() {
 	lcd.begin(16, 2);
@@ -37,8 +55,15 @@ void setup() {
 	digitalWrite(9, HIGH);
 	pinMode(10, INPUT);
 	digitalWrite(10, HIGH);
+
+	analogWrite(pinBacklight, 255);
+	currentMillis = millis();
+	lightMillis = currentMillis;
+
+	lcd.clear();
 }
 
 void loop() {
-
+	currentMillis = millis();
+	checkBacklight();
 }
