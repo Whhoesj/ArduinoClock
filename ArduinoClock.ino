@@ -1,3 +1,4 @@
+#include <RCSwitch.h>
 #include <LiquidCrystal.h>
 #include <Time.h>
 
@@ -17,6 +18,13 @@ int buttonStateBack = LOW;
 int buttonStateEnter = LOW;
 int buttonStatePrevious = LOW;
 int buttonStateNext = LOW;
+int buttonValBack = LOW;
+int buttonValBackP = LOW;
+int buttonValEnter = LOW;
+int buttonValPrevious = LOW;
+int buttonValPreviousP = LOW;
+int buttonValNext = LOW;
+int buttonValNextP = LOW;
 
 long currentMillis;
 int editHour, editMinute, editSecond, editDay, editMonth, editYear, editDOW;
@@ -39,7 +47,10 @@ void checkBacklight() {
 }
 
 void checkButtons() {
-
+	buttonStateBack = digitalRead(pinButtonBack);
+	buttonStateEnter = digitalRead(pinButtonEnter);
+	buttonStatePrevious = digitalRead(pinButtonPrevious);
+	buttonStateNext = digitalRead(pinButtonNext);
 }
 
 void setup() {
