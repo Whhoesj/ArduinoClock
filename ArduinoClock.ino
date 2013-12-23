@@ -51,6 +51,25 @@ void checkButtons() {
 	buttonStateEnter = digitalRead(pinButtonEnter);
 	buttonStatePrevious = digitalRead(pinButtonPrevious);
 	buttonStateNext = digitalRead(pinButtonNext);
+	if (buttonStateBack == LOW || buttonStateEnter == LOW || buttonStatePrevious == LOW || buttonStateNext == LOW) delay(100);
+}
+
+void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
+	lcd.setCursor(0, 0);
+	if (h < 10) lcd.print(0);
+	lcd.print(h);
+	lcd.print(":");
+	if (m < 10) lcd.print(0);
+	lcd.print(m);
+	lcd.print(":");
+	if (s < 10) lcd.print(0);
+	lcd.print(s);
+	lcd.setCursor(0, 1);
+	lcd.print(String(d));
+	lcd.print(" - ");
+	lcd.print(String(mo));
+	lcd.print(" - ");
+	lcd.print(String(y));
 }
 
 void setup() {
@@ -77,4 +96,5 @@ void setup() {
 void loop() {
 	currentMillis = millis();
 	checkBacklight();
+	printTime(hour(), minute(), second(), day(), month(), year(), weekday());
 }
