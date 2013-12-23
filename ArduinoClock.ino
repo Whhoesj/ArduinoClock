@@ -51,7 +51,10 @@ void checkButtons() {
 	buttonStateEnter = digitalRead(pinButtonEnter);
 	buttonStatePrevious = digitalRead(pinButtonPrevious);
 	buttonStateNext = digitalRead(pinButtonNext);
-	if (buttonStateBack == LOW || buttonStateEnter == LOW || buttonStatePrevious == LOW || buttonStateNext == LOW) delay(100);
+	if (buttonStateBack == LOW || buttonStateEnter == LOW || buttonStatePrevious == LOW || buttonStateNext == LOW) {
+		delay(100);
+		lightMillis = currentMillis;
+	}
 }
 
 void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
@@ -95,6 +98,8 @@ void setup() {
 
 void loop() {
 	currentMillis = millis();
+	time_t t = now();
+	checkButtons();
 	checkBacklight();
-	printTime(hour(), minute(), second(), day(), month(), year(), weekday());
+	printTime(hour(t), minute(t), second(t), day(t), month(t), year(t), weekday(t));
 }
