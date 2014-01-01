@@ -12,15 +12,19 @@ const int pinButtonNext = 10;
 const int pinBuzzer = 13;
 const int pinLightSensor = A0;
 const String dayOfWeek[] =
-	{"Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"};
+	{"Maandag  ", "Dinsdag  ", "Woensdag ", "Donderdag", "Vrijdag  ", "Zaterdag ", "Zondag   "};
 const String receiverName[] = 
-	{"Ontvanger 1", "Ontvanger 2", "Ontvanger 3"};
+	{"< Ontvanger 1  >", "< Ontvanger 2  >", "< Ontvanger 3  >"};
+const String menuStrings[] = 
+	{"<    Alarm     >", "<     Klok     >", "<  Helderheid  >"};
 
 int buttonState[] = {HIGH, HIGH, HIGH, HIGH};
 int buttonStatePrevious[] = {HIGH, HIGH, HIGH, HIGH};
 int buttonMillis[] = {0, 0, 0, 0};
 
 RCSwitch transmitter = RCSwitch();
+
+time_t alarm, currentTime;
 
 long currentMillis;
 int editHour, editMinute, editSecond, editDay, editMonth, editYear, editDOW;
@@ -32,6 +36,7 @@ long lightMillis;
 int mode = 0;
 int selectedReceiver = 0;
 boolean receiverState[] = {false, false, false};
+int selectedMenuItem = 0;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -79,20 +84,40 @@ void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
 
 void printRemote() {
 	lcd.setCursor(0, 0);
-	lcd.print(" ");
 	lcd.print(receiverName[selectedReceiver]);
-	lcd.print("        ");
 	lcd.setCursor(0, 1);
-	lcd.print(booleanToString(receiverState[selectedReceiver]));
-	lcd.print("        ");
+	if (receiverState[selectedReceiver]) {
+		lcd.print("  Ingeschakeld  ");
+	} else {
+		lcd.print("  Uitgeschakeld ");
+	}
 }
 
-String booleanToString(boolean input) {
-	if (!input) {
-		return "Uitgeschakeld";
-	} else {
-		return "Ingeschakeld";
+void printMenu() {
+	lcd.setCursor(0, 0);
+	lcd.print(menuStrings[selectedMenuItem]);
+	lcd.print(0, 1);
+	lcd.print("     ");
+	switch (selectedMenuItem) {
+		case 0:
+			if (hour(alarm) < 10) lcd.print(0);
+			lcd.print(hour(alarm));
+			lcd.print(":");
+			if (minute(alarm) < 10) lcd.print(0);
+			lcd.print(minute(alarm));
+			break;
+		case 1:
+			if (hour(currentTime) < 10) lcd.print(0);
+			lcd.print(hour(currentTime));
+			lcd.print(":");
+			if (minute(currentTime) < 10) lcd.print(0);
+			lcd.print(minute(currentTime));
+			break;
+		case 2:
+			lcd.print("     ");
+			break;
 	}
+	lcd.print("      ");
 }
 
 void switchReceiver() {
@@ -153,13 +178,14 @@ void setup() {
 
 void loop() {
 	currentMillis = millis();
-	time_t t = now();
+	currentTime = now();
 	checkButtons();
 	checkBacklight();
 	switch (mode) {
 		case 0:
-			printTime(hour(t), minute(t), second(t), day(t), month(t), year(t), weekday(t));
+			printTime(hour(currentTime), minute(currentTime), second(currentTime), day(currentTime), month(currentTime), year(currentTime), weekday(currentTime));
 			if (buttonState[2] == LOW || buttonState[3] == LOW) mode = 1;
+			if (buttonState[1] == LOW) mode = 2;
 			break;
 		case 1:
 			if (buttonState[0] == LOW) {
@@ -178,6 +204,24 @@ void loop() {
 				if (selectedReceiver > 2) selectedReceiver = 0;
 			}
 			printRemote();
+			break;
+		case 2:
+			if (buttonState[0] == LOW) {
+				mode = 0;
+				break;
+			}
+			if (buttonState[1] == LOW) {
+
+			}
+			if (buttonState[2] == LOW) {
+				selectedMenuItem--;
+				if (selectedMenuItem < 0) selectedMenuItem = 2;
+			}
+			if (buttonState[3] == LOW) {
+				selectedMenuItem++;
+				if (selectedMenuItem > 2) selectedMenuItem = 0;
+			}
+			printMenu();
 			break;
 	}
 }
