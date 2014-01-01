@@ -16,17 +16,9 @@ const String dayOfWeek[] =
 const String receiverName[] = 
 	{"Ontvanger 1", "Ontvanger 2", "Ontvanger 3"};
 
-int buttonStateBack = HIGH;
-int buttonStateEnter = HIGH;
-int buttonStatePrevious = HIGH;
-int buttonStateNext = HIGH;
-int buttonValBack = HIGH;
-int buttonValBackP = HIGH;
-int buttonValEnter = HIGH;
-int buttonValPrevious = HIGH;
-int buttonValPreviousP = HIGH;
-int buttonValNext = HIGH;
-int buttonValNextP = HIGH;
+int buttonState[] = {HIGH, HIGH, HIGH, HIGH};
+int buttonStatePrevious[] = {HIGH, HIGH, HIGH, HIGH};
+int buttonMillis[] = {0, 0, 0, 0};
 
 RCSwitch transmitter = RCSwitch();
 
@@ -53,14 +45,16 @@ void checkBacklight() {
 }
 
 void checkButtons() {
-	buttonStateBack = digitalRead(pinButtonBack);
-	buttonStateEnter = digitalRead(pinButtonEnter);
-	buttonStatePrevious = digitalRead(pinButtonPrevious);
-	buttonStateNext = digitalRead(pinButtonNext);
-	if (buttonStateBack == LOW || buttonStateEnter == LOW || buttonStatePrevious == LOW || buttonStateNext == LOW) {
-		delay(100);
-		lightMillis = currentMillis;
+	buttonState[0] = digitalRead(pinButtonBack);
+	buttonState[1] = digitalRead(pinButtonEnter);
+	buttonState[2] = digitalRead(pinButtonPrevious);
+	buttonState[3] = digitalRead(pinButtonNext);
+	for (int i = 0; i <= 3; i++) {	
+		if (buttonState[i] == LOW) {
+			delay(500);
+		}
 	}
+	Serial.println(buttonState[0]);
 }
 
 void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
@@ -146,6 +140,8 @@ void setup() {
 	digitalWrite(10, HIGH);
 	checkButtons();
 
+	Serial.begin(9600);
+
 	transmitter.enableTransmit(13);
 
 	analogWrite(pinBacklight, 255);
@@ -163,21 +159,21 @@ void loop() {
 	switch (mode) {
 		case 0:
 			printTime(hour(t), minute(t), second(t), day(t), month(t), year(t), weekday(t));
-			if (buttonValNext == LOW || buttonStatePrevious == LOW) mode = 1;
+			if (buttonState[2] == LOW || buttonState[3] == LOW) mode = 1;
 			break;
 		case 1:
-			if (buttonStateBack == LOW) {
+			if (buttonState[0] == LOW) {
 				mode = 0;
 				break;
 			}
-			if (buttonStateEnter == LOW) {
+			if (buttonState[1] == LOW) {
 				switchReceiver();
 			}
-			if (buttonStatePrevious == LOW) {
+			if (buttonState[2] == LOW) {
 				selectedReceiver--;
 				if (selectedReceiver < 0) selectedReceiver = 2;
 			}
-			if (buttonStateNext == LOW) {
+			if (buttonState[2] == LOW) {
 				selectedReceiver++;
 				if (selectedReceiver > 2) selectedReceiver = 0;
 			}
