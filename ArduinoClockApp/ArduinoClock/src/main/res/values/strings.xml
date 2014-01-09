@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Arduino Clock</string>
+    <string name="hello_world">Hallo wereld!</string>
+    <string name="action_refresh">Vernieuwen</string>
+    <string name="action_set_alarm">Alarm</string>
+    <string name="action_set_time">Tijd bijwerken</string>
+    <string name="action_settings">Instellingen</string>
+    <string name="switch1">Lamp kast</string>
+    <string name="switch2">Lamp bed</string>
+    <string name="switch3">Lamp bureau</string>
+    <string name="error_network">Netwerk fout</string>
+
+</resources>

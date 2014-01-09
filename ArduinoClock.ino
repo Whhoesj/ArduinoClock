@@ -45,6 +45,7 @@ void checkBacklight() {
 		analogWrite(pinBacklight, lightMin);
 	} else {
 		lightVal = map(analogRead(pinLightSensor), 1022, 0, lightMin, lightMax);
+		lightVal = 255;
 		analogWrite(pinBacklight, lightVal);
 	}
 }
@@ -54,12 +55,11 @@ void checkButtons() {
 	buttonState[1] = digitalRead(pinButtonEnter);
 	buttonState[2] = digitalRead(pinButtonPrevious);
 	buttonState[3] = digitalRead(pinButtonNext);
-	for (int i = 0; i <= 3; i++) {	
-		if (buttonState[i] == LOW) {
-			delay(500);
-		}
+	if (buttonState[0] == LOW || buttonState[1] == LOW || buttonState[2] == LOW || buttonState[3] == LOW) {
+		lightMillis = currentMillis;
+		Serial.println("button");
+		delay(1000);
 	}
-	Serial.println(buttonState[0]);
 }
 
 void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
@@ -165,9 +165,9 @@ void setup() {
 	digitalWrite(10, HIGH);
 	checkButtons();
 
-	Serial.begin(9600);
-
 	transmitter.enableTransmit(13);
+
+	Serial.begin(9600);
 
 	analogWrite(pinBacklight, 255);
 	currentMillis = millis();
@@ -198,10 +198,12 @@ void loop() {
 			if (buttonState[2] == LOW) {
 				selectedReceiver--;
 				if (selectedReceiver < 0) selectedReceiver = 2;
+				Serial.println(selectedReceiver);
 			}
-			if (buttonState[2] == LOW) {
+			if (buttonState[3] == LOW) {
 				selectedReceiver++;
 				if (selectedReceiver > 2) selectedReceiver = 0;
+				Serial.println(selectedReceiver);
 			}
 			printRemote();
 			break;
