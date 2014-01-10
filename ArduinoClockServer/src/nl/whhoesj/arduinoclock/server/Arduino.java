@@ -4,16 +4,12 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 
 public class Arduino {
 
-    private SerialPort serialPort;
-    private OutputStream output;
-    private BufferedReader reader;
     private static final int TIME_OUT = 2000;
     private static final int DATA_RATE = 9600;
     private static final String PORT_NAMES[] = {
@@ -21,8 +17,11 @@ public class Arduino {
             "/dev/ttyACM0", // Linux
             "COM3", // Windows
     };
+    private SerialPort serialPort;
+    private OutputStream output;
+    private BufferedReader reader;
 
-    public void open() throws NoArduinoExceptioln {
+    public Arduino() throws NoArduinoException {
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
@@ -37,7 +36,7 @@ public class Arduino {
             }
         }
         if (portId == null) {
-            throw new NoArduinoExceptioln();
+            throw new NoArduinoException();
         }
 
         try {
@@ -60,8 +59,9 @@ public class Arduino {
                 reader.close();
                 output.close();
                 serialPort.close();
-            } catch (Exception e1) { }
-            throw new NoArduinoExceptioln();
+            } catch (Exception e1) {
+            }
+            throw new NoArduinoException();
 
         }
     }
@@ -80,6 +80,10 @@ public class Arduino {
     }
 
     public void setAlarm(TimeDate t) {
+
+    }
+
+    public void setTime(TimeDate t) {
 
     }
 

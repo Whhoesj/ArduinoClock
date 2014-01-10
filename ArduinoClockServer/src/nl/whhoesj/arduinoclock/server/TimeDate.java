@@ -2,11 +2,10 @@ package nl.whhoesj.arduinoclock.server;
 
 public class TimeDate {
 
-    private int hour, minute, second, day, month, year;
-    private int mode;
-
     public static final int MODE_TIME = 1;
     public static final int MODE_DATE = 2;
+    private int hour, minute, second, day, month, year;
+    private int mode;
 
     public TimeDate(int mode) {
         this.mode = mode;
@@ -24,7 +23,21 @@ public class TimeDate {
         }
     }
 
-    public int getMode() { return mode; }
+    public void set(String s) {
+        String split[] = s.split(";");
+        this.hour = Integer.parseInt(split[0]);
+        this.minute = Integer.parseInt(split[1]);
+        this.second = Integer.parseInt(split[2]);
+        if (mode == MODE_DATE) {
+            this.day = Integer.parseInt(split[3]);
+            this.month = Integer.parseInt(split[4]);
+            this.year = Integer.parseInt(split[5]);
+        }
+    }
+
+    public int getMode() {
+        return mode;
+    }
 
     public int getHour() {
         return hour;

@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
     public static final String PREF_HOST = "host";
     public static final String PREF_PORT = "port";
     private Switch switch1, switch2, switch3;
+    private MenuItem actionRefresh, actionSetAlarm, actionSetTime;
     private SharedPreferences settings;
 
     @Override
@@ -34,6 +35,9 @@ public class MainActivity extends Activity {
         switch1 = (Switch) findViewById(R.id.switch1);
         switch2 = (Switch) findViewById(R.id.switch2);
         switch3 = (Switch) findViewById(R.id.switch3);
+        actionRefresh = (MenuItem) findViewById(R.id.action_refresh);
+        actionSetAlarm = (MenuItem) findViewById(R.id.action_set_alarm);
+        actionSetTime = (MenuItem) findViewById(R.id.action_set_time);
 
         settings = getPreferences(0);
     }
@@ -61,7 +65,7 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            new DataRefresh().execute();
+            new NetworkAction().execute(ClockClient.ACTION_REFRESH);
             return true;
         }
         if (id == R.id.action_set_alarm) {
@@ -76,76 +80,71 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class DataRefresh extends AsyncTask<Void, Void, Void> {
-
-        private boolean state[] = new boolean[3];
-        private String host;
-        private int port;
+    private class NetworkAction extends AsyncTask<Integer, Void, Void> {
+        private boolean[] state;
+        private String host = "ubuntuwouter.lan";
+        private int port = 1337;
         private boolean error = false;
+
+        private void changeUI(boolean b) {
+            setProgressBarIndeterminate(!b);
+            switch1.setEnabled(b);
+            switch2.setEnabled(b);
+            switch3.setEnabled(b);
+            //actionRefresh.setEnabled(b);
+            //actionSetAlarm.setEnabled(b);
+            //actionSetTime.setEnabled(b);
+        }
 
         @Override
         protected void onPreExecute() {
-            setProgressBarIndeterminate(true);
-            state[0] = switch1.isChecked();
-            switch1.setEnabled(false);
-            state[1] = switch2.isChecked();
-            switch2.setEnabled(false);
-            state[2] = switch3.isChecked();
-            switch3.setEnabled(false);
-
-            host = settings.getString(PREF_HOST, "ubuntuwouter.lan");
-            port = settings.getInt(PREF_PORT, 1337);
-
+            changeUI(false);
             super.onPreExecute();
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            Socket socket = null;
-            PrintWriter printWriter = null;
-            BufferedReader reader = null;
-
+        protected Void doInBackground(Integer... params) {
+            ClockClient client = new ClockClient(host, port);
             try {
-                socket = new Socket(host, port);
-                printWriter = new PrintWriter(socket.getOutputStream());
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                printWriter.println("refresh");
-                printWriter.flush();
-                String received[] = reader.readLine().split(";");
-                for (int i = 0; i <= 2; i++) {
-                    if (received[i].equals("true")) {
-                        state[i] = true;
-                    } else {
-                        state[i] = false;
-                    }
+                switch (params[0]) {
+                    case ClockClient.ACTION_REFRESH:
+                        state = client.refresh();
+                        break;
+                    case ClockClient.ACTION_TOGGLE1:
+                        state = client.toggle(ClockClient.ACTION_TOGGLE1);
+                        break;
+                    case ClockClient.ACTION_TOGGLE2:
+                        state = client.toggle(ClockClient.ACTION_TOGGLE2);
+                        break;
+                    case ClockClient.ACTION_TOGGLE3:
+                        state = client.toggle(ClockClient.ACTION_TOGGLE3);
+                        break;
+                    case ClockClient.ACITON_GETALARM:
+                        break;
+                    case ClockClient.ACTION_SETALARM:
+                        break;
+                    case ClockClient.ACTION_SETTIME:
+                        break;
                 }
-
             } catch (IOException e) {
-                e.printStackTrace();
                 error = true;
             }
 
-            try {
-                if (reader != null) reader.close();
-                if (printWriter != null) printWriter.close();
-                if (socket != null) socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            switch1.setChecked(state[0]);
-            switch1.setEnabled(true);
-            switch2.setChecked(state[1]);
-            switch2.setEnabled(true);
-            switch3.setChecked(state[2]);
-            switch3.setEnabled(true);
-            if (error) Toast.makeText(getBaseContext(), getResources().getText(R.string.error_network), Toast.LENGTH_LONG).show();
-            setProgressBarIndeterminate(false);
+
+            changeUI(true);
+            if (!error) {
+                switch1.setChecked(state[0]);
+                switch2.setChecked(state[1]);
+                switch3.setChecked(state[2]);
+            }
+
             super.onPostExecute(aVoid);
         }
     }
+
 }
