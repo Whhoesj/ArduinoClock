@@ -38,6 +38,7 @@ public class Server {
             TimeDate alarmTime = arduino.getAlarm();
             send(alarmTime.getHour() + ";" + alarmTime.getMinute() + ";"  + alarmTime.getSecond() + ";");
         } else if (received.equals("settime")) {
+            send("hallo");
             TimeDate time = new TimeDate(TimeDate.MODE_DATE);
             time.set(readLine());
             arduino.setTime(time);

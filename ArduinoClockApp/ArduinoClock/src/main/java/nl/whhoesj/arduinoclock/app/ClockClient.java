@@ -44,8 +44,7 @@ public class ClockClient {
 
     private boolean[] parseState(String s) {
         String split[] = s.split(";");
-        boolean state[] = { split[0].equals("true"), split[1].equals("true"), split[2].equals("true") };
-        return state;
+        return new boolean[]{ split[0].equals("true"), split[1].equals("true"), split[2].equals("true") };
     }
 
     public boolean[] refresh() throws IOException {
@@ -78,5 +77,29 @@ public class ClockClient {
         return state;
     }
 
+    public void setTime(int hour, int minute, int second, int day, int month, int year) throws IOException {
+        open();
+        writer.println("settime");
+        writer.flush();
+        while (!reader.readLine().equals("hallo"));
+        writer.println(hour + ";" + minute + ";" + second + ";" + day + ";" + month + ";" + year + ";");
+        writer.flush();
+        close();
+
+    }
+
+    public void setAlarm(int hour, int minute, int second, boolean state) throws IOException {
+        open();
+        writer.println("setalarm");
+        writer.flush();
+        while (!reader.readLine().equals("hallo"));
+        if (state) {
+            writer.println(hour + ";" + minute + ";" + second + ";");
+        } else {
+            writer.println("disable");
+        }
+        writer.flush();
+        close();
+    }
 
 }

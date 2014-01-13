@@ -4,6 +4,7 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -66,17 +67,43 @@ public class Arduino {
         }
     }
 
-    public boolean[] getSwitchState() {
-        return null;
+    public boolean[]
+    getSwitchState() throws IOException {
+        output.write(0x00);
+        output.write(0x04);
+        output.flush();
+        String[] received = reader.readLine().split(";");
+        boolean[] outputVal = new boolean[2];
+        for (int i = 0; i <= 2; i++) {
+            //TODO
+            outputVal[i] = received[0].equals("1");
+        }
+        return outputVal;
     }
 
-    public void toggleSwitch(int s) {
-
+    public void toggleSwitch(int s) throws IOException {
+        output.write(0x00);
+        switch (s) {
+            case 1:
+                output.write(0x01);
+                break;
+            case 2:
+                output.write(0x02);
+                break;
+            case 3:
+                output.write(0x03);
+                break;
+        }
+        output.flush();
     }
 
-    public TimeDate getAlarm() {
-        TimeDate output = new TimeDate(TimeDate.MODE_TIME);
-        return output;
+    public TimeDate getAlarm() throws IOException {
+        TimeDate outputVal = new TimeDate(TimeDate.MODE_TIME);
+        output.write(0x00);
+        output.write(0x05);
+        output.flush();
+        outputVal.set(reader.readLine());
+        return outputVal;
     }
 
     public void setAlarm(TimeDate t) {

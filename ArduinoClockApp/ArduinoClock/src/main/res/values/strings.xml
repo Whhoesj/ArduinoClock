@@ -10,6 +10,6 @@
     <string name="switch1">Lamp kast</string>
     <string name="switch2">Lamp bed</string>
     <string name="switch3">Lamp bureau</string>
-    <string name="error_network">Netwerk fout</string>
+    <string name="error_network">Netwerk fout</string><string name="main_label_remote">Verlichting</string><string name="main_label_alarm">Alarm</string><string name="main_button_send">Verzenden</string>
 
 </resources>

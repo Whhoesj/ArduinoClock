@@ -8,12 +8,6 @@
         android:orderInCategory="100"
         android:showAsAction="always" />
 
-    <item android:id="@+id/action_set_alarm"
-        android:title="@string/action_set_alarm"
-        android:icon="@drawable/ic_action_set_alarm"
-        android:orderInCategory="200"
-        android:showAsAction="ifRoom" />
-
     <item android:id="@+id/action_set_time"
         android:title="@string/action_set_time"
         android:icon="@drawable/ic_action_set_time"
