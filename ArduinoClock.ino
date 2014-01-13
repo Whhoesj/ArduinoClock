@@ -40,6 +40,54 @@ int selectedMenuItem = 0;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+void serialPC() {
+	if (Serial.available() > 1) {
+		if (Serial.read() == 0x00) {
+			switch (Serial.read()) {
+				case 0x01:
+					//Switch 1
+					selectedReceiver = 0;
+					switchReceiver();
+					break;
+				case 0x02:
+					//Switch 2
+					selectedReceiver = 1;
+					switchReceiver();
+					break;
+				case 0x03:
+					//Switch 3
+					selectedReceiver = 2;
+					switchReceiver();
+					break;
+				case 0x04:
+					//Return switch state
+					Serial.print(receiverState[0]);
+					Serial.print(";");
+					Serial.print(receiverState[1]);
+					Serial.print(";");
+					Serial.print(receiverState[2]);
+					Serial.println(";");
+					break;
+				case 0x05:
+					//Return alarm time
+					Serial.print(hour(alarm));
+					Serial.print(";");
+					Serial.print(minute(alarm));
+					Serial.print(";");
+					Serial.print(second(alarm));
+					Serial.println(";");
+					break;
+				case 0x06:
+					//Set alarm
+					break;
+				case 0x07:
+					//Set Time
+					break;
+			}
+		}
+	}
+}
+
 void checkBacklight() {
 	if (currentMillis - lightMillis > lightTimeout) {
 		analogWrite(pinBacklight, lightMin);
