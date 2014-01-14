@@ -19,8 +19,10 @@ const String menuStrings[] =
 	{"<    Alarm     >", "<     Klok     >", "<  Helderheid  >"};
 
 int buttonState[] = {HIGH, HIGH, HIGH, HIGH};
-int buttonStatePrevious[] = {HIGH, HIGH, HIGH, HIGH};
-int buttonMillis[] = {0, 0, 0, 0};
+int lastButtonState[] = {LOW,LOW,LOW,LOW};
+int bs[] = {LOW,LOW,LOW,LOW};
+int lastDebounceTime[] = {0, 0, 0, 0};
+int debounceDelay = 1000;
 
 RCSwitch transmitter = RCSwitch();
 
@@ -109,6 +111,12 @@ void checkButtons() {
 		delay(1000);
 	}
 }
+
+//LARSZJWIK
+void checkButton() {
+  
+}
+
 
 void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
 	lcd.setCursor(0, 0);
@@ -227,7 +235,7 @@ void setup() {
 void loop() {
 	currentMillis = millis();
 	currentTime = now();
-	checkButtons();
+	checkButton();
 	checkBacklight();
 	switch (mode) {
 		case 0:
