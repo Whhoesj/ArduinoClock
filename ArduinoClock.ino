@@ -152,7 +152,7 @@ void printRemote() {
 void printMenu() {
 	lcd.setCursor(0, 0);
 	lcd.print(menuStrings[selectedMenuItem]);
-	lcd.print(0, 1);
+	lcd.setCursor(0, 1);
 	lcd.print("     ");
 	switch (selectedMenuItem) {
 		case 0:
