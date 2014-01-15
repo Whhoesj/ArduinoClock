@@ -16,7 +16,7 @@ const String dayOfWeek[] =
 const String receiverName[] = 
 	{"< Ontvanger 1  >", "< Ontvanger 2  >", "< Ontvanger 3  >"};
 const String menuStrings[] = 
-	{"<    Alarm     >", "<     Klok     >", "<  Helderheid  >"};
+	{"<    Alarm     >", "<    Klok      >", "<  Helderheid  >"};
 
 boolean buttonState[] = { false, false, false, false };
 boolean lastButtonState[] = { false, false, false, false };
@@ -109,7 +109,7 @@ int convertPin(int i) {
 
 void checkButton() {
 	if (digitalRead(pinButtonBack) == LOW || digitalRead(pinButtonEnter) == LOW || digitalRead(pinButtonPrevious) == LOW || digitalRead(pinButtonNext) == LOW) delay(debounceDelay);
-	
+
 	for (int i = 0; i <= 3; i++) {
 		buttonState[i] = false;
 		if (digitalRead(convertPin(i)) == LOW) buttonState[i] = true;
@@ -185,6 +185,8 @@ void printMenu() {
 }
 
 void switchReceiver() {
+	lcd.setCursor(0, 1);
+	lcd.write(" Even geduld... ");
 	if (!receiverState[selectedReceiver]) {
 		switch (selectedReceiver) {
 			case 0:
