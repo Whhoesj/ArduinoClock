@@ -24,10 +24,10 @@ int debounceDelay = 50;
 
 RCSwitch transmitter = RCSwitch();
 
-time_t alarm, currentTime;
+time_t alarm, currentTime, editTime;
 
 long currentMillis;
-int editHour, editMinute, editSecond, editDay, editMonth, editYear, editDOW;
+int editVal[] = { 0, 0, 0, 0, 0, 0 };
 int lightVal = 255;
 int lightMin = 0;
 int lightMax = 255;
@@ -37,6 +37,8 @@ int mode = 0;
 int selectedReceiver = 0;
 boolean receiverState[] = {false, false, false};
 int selectedMenuItem = 0;
+boolean firstEdit = false;
+int editCycle = 0;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -216,6 +218,60 @@ void switchReceiver() {
 	}
 }
 
+boolean month31(int m) {
+	switch (m) {
+		case 1: return true;
+		case 3: return true;
+		case 5: return true;
+		case 7: return true;
+		case 8: return true;
+		case 10: return true;
+		case 12: return true;
+		default: return false;
+	}
+}
+
+void checkEditValues() {
+	// (yr % 4 == 0 && yr % 100 != 0 || yr % 400 == 0)
+	//
+	/*
+	 * 0 hour
+	 * 1 minute
+	 * 2 second
+	 * 
+	 * 3 day
+	 * 4 month
+	 * 5 year
+	 */
+	if (editVal[5] < 1970) editVal[5] = 2014;
+	
+	if (editVal[4] < 1) editVal[4] = 12;
+	if (editVal[4] > 12) editVal[4] = 1;
+
+	boolean isLeapYear = ((editVal[5] % 4 == 0) && (editVal[5] % 100 != 0) || (editVal[5] % 400 == 0));
+	if (isLeapYear && editVal[4] == 2 && editVal[3] < 1) editVal[3] = 29;
+	if (isLeapYear && editVal[4] == 2 && editVal[3] > 29) editVal[3] = 1;
+
+	if (!isLeapYear && editVal[4] == 2 && editVal[3] < 1) editVal[3] = 28;
+	if (!isLeapYear && editVal[4] == 2 && editVal[3] > 28) editVal[3] = 1;
+
+	boolean mo31 = month31(editVal[4]);
+	if (!isLeapYear && mo31 && editVal[3] < 1) editVal[3] = 31;
+	if (!isLeapYear && mo31 && editVal[3] > 31) editVal[3] = 1;
+
+	if (!isLeapYear && !mo31 && editVal[3] < 1) editVal[3] = 30;
+	if (!isLeapYear && !mo31 && editVal[3] > 30) editVal[3] = 1;
+
+	if (editVal[0] < 0) editVal[0] = 23;
+	if (editVal[0] > 23) editVal[0] = 0;
+	
+	if (editVal[1] < 0) editVal[1] = 59;
+	if (editVal[1] > 59) editVal[1] = 0;
+
+	if (editVal[2] < 0) editVal[2] = 59;
+	if (editVal[2] > 59) editVal[2] = 0;
+}
+
 void setup() {
 	lcd.begin(16, 2);
 	lcd.write("Even geduld...");
@@ -314,18 +370,39 @@ void loop() {
 			break;
 		case 4:
 		//TIME MENU
-			if (buttonState[0]) {
+			if (!firstEdit) {
+				firstEdit = true;
+				editTime = currentTime;
+				editVal[0] = hour(editTime);
+				editVal[1] = minute(editTime);
+				editVal[2] = second(editTime);
+				editVal[3] = day(editTime);
+				editVal[4] = month(editTime);
+				editVal[5] = 2014;
+			}
 
+			if (buttonState[0]) {
+				firstEdit = false;
+				checkEditValues();
+				setTime(editVal[0], editVal[1], editVal[2], editVal[3], editVal[4], editVal[5]);
+				mode = 2;
+				break;
 			}
 			if (buttonState[1]) {
-
+				editCycle++;
+				if (editCycle > 5) editCycle = 0;
 			}
 			if (buttonState[2]) {
-
+				editVal[editCycle]--;
+				checkEditValues();
 			}
 			if (buttonState[3]) {
-				
+				editVal[editCycle]++;
+				checkEditValues();
 			}
+			printTime(editVal[0], editVal[1], editVal[2], editVal[3], editVal[4], editVal[5], 0);
+			lcd.setCursor(15, 0);
+			lcd.write("E");
 			break;
 		case 5:
 		//SCREEN MENU
