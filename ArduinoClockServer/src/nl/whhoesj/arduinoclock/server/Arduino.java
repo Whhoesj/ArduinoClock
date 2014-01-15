@@ -73,8 +73,8 @@ public class Arduino {
         output.write(0x04);
         output.flush();
         String[] received = reader.readLine().split(";");
-        boolean[] outputVal = new boolean[2];
-        for (int i = 0; i <= 2; i++) {
+        boolean[] outputVal = new boolean[3];
+        for (int i = 0; i < 3; i++) {
             //TODO
             outputVal[i] = received[0].equals("1");
         }
