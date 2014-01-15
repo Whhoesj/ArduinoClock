@@ -16,7 +16,7 @@ const String dayOfWeek[] =
 const String receiverName[] = 
 	{"< Ontvanger 1  >", "< Ontvanger 2  >", "< Ontvanger 3  >"};
 const String menuStrings[] = 
-	{"<    Alarm     >", "<    Klok      >", "<  Helderheid  >"};
+	{"<    Alarm     >", "<    Klok      >", "<    Scherm    >"};
 
 boolean buttonState[] = { false, false, false, false };
 boolean lastButtonState[] = { false, false, false, false };
@@ -248,11 +248,13 @@ void loop() {
 	checkBacklight();
 	switch (mode) {
 		case 0:
+		//START SCREEN
 			printTime(hour(currentTime), minute(currentTime), second(currentTime), day(currentTime), month(currentTime), year(currentTime), weekday(currentTime));
 			if (buttonState[2] || buttonState[3]) mode = 1;
 			if (buttonState[1]) mode = 2;
 			break;
 		case 1:
+		//REMOTE SCREEN
 			if (buttonState[0]) {
 				mode = 0;
 				break;
@@ -273,12 +275,17 @@ void loop() {
 			printRemote();
 			break;
 		case 2:
+		//MAIN MENU
 			if (buttonState[0]) {
 				mode = 0;
 				break;
 			}
 			if (buttonState[1]) {
-
+				switch (selectedMenuItem) {
+					case 0: mode = 3; break;
+					case 1: mode = 4; break;
+					case 2: mode = 5; break;
+				}
 			}
 			if (buttonState[2]) {
 				selectedMenuItem--;
@@ -289,6 +296,51 @@ void loop() {
 				if (selectedMenuItem > 2) selectedMenuItem = 0;
 			}
 			printMenu();
+			break;
+		case 3:
+		//ALARM MENU
+			if (buttonState[0]) {
+
+			}
+			if (buttonState[1]) {
+
+			}
+			if (buttonState[2]) {
+
+			}
+			if (buttonState[3]) {
+
+			}
+			break;
+		case 4:
+		//TIME MENU
+			if (buttonState[0]) {
+
+			}
+			if (buttonState[1]) {
+
+			}
+			if (buttonState[2]) {
+
+			}
+			if (buttonState[3]) {
+				
+			}
+			break;
+		case 5:
+		//SCREEN MENU
+			if (buttonState[0]) {
+				
+			}
+			if (buttonState[1]) {
+
+			}
+			if (buttonState[2]) {
+
+			}
+			if (buttonState[3]) {
+				
+			}
 			break;
 	}
 }
