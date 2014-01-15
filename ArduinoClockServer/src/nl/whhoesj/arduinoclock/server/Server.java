@@ -30,7 +30,7 @@ public class Server {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         writer = new PrintWriter(socket.getOutputStream());
         String received = readLine();
-        System.out.println(received);
+        System.out.print(received + " ");
         if (received.equals("refresh")) {
             boolean state[] = arduino.getSwitchState();
             send(state[0] + ";" + state[1] + ";" + state[2] + ";");

@@ -32,7 +32,7 @@ public class MainActivity extends Activity implements CompoundButton.OnCheckedCh
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         switch1 = (Switch) findViewById(R.id.switch1);
@@ -118,12 +118,12 @@ public class MainActivity extends Activity implements CompoundButton.OnCheckedCh
 
     private class NetworkAction extends AsyncTask<Integer, Void, Void> {
         private boolean[] state;
-        private String host = "ubuntuwouter.lan";
+        private String host = "192.168.150.1";
         private int port = 1337;
         private boolean error = false;
 
         private void changeUI(boolean b) {
-            setProgressBarIndeterminate(!b);
+            setProgressBarVisibility(!b);
             switch1.setEnabled(b);
             switch2.setEnabled(b);
             switch3.setEnabled(b);
