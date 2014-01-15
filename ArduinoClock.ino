@@ -37,7 +37,7 @@ boolean alarmTrigger = false;
 int editVal[] = { 0, 0, 0, 0, 0, 0 };
 
 int lightVal = 255;
-int lightMin = 0;
+int lightMin = 2;
 int lightMax = 255;
 
 int mode = 0;
@@ -157,7 +157,7 @@ void printHome() {
 		lcd.print("     ");
 	}
 	lcd.setCursor(0, 1);
-	lcd.print(dayOfWeek[weekday(currentTime)]);
+	lcd.print(dayOfWeek[weekday(currentTime) - 2]);
 	lcd.print(" ");
 	lcd.print(day(currentTime));
 	if (day(currentTime) < 10) lcd.print(" ");
