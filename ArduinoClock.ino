@@ -18,11 +18,9 @@ const String receiverName[] =
 const String menuStrings[] = 
 	{"<    Alarm     >", "<     Klok     >", "<  Helderheid  >"};
 
-int buttonState[] = {HIGH, HIGH, HIGH, HIGH};
-int lastButtonState[] = {LOW,LOW,LOW,LOW};
-int bs[] = {LOW,LOW,LOW,LOW};
-int lastDebounceTime[] = {0, 0, 0, 0};
-int debounceDelay = 1000;
+boolean buttonState[] = { false, false, false, false };
+boolean lastButtonState[] = { false, false, false, false };
+int debounceDelay = 50;
 
 RCSwitch transmitter = RCSwitch();
 
@@ -100,21 +98,31 @@ void checkBacklight() {
 	}
 }
 
-void checkButtons() {
-	buttonState[0] = digitalRead(pinButtonBack);
-	buttonState[1] = digitalRead(pinButtonEnter);
-	buttonState[2] = digitalRead(pinButtonPrevious);
-	buttonState[3] = digitalRead(pinButtonNext);
-	if (buttonState[0] == LOW || buttonState[1] == LOW || buttonState[2] == LOW || buttonState[3] == LOW) {
-		lightMillis = currentMillis;
-		Serial.println("button");
-		delay(1000);
+int convertPin(int i) {
+	switch (i) {
+		case 0: return pinButtonBack;
+		case 1: return pinButtonEnter;
+		case 2: return pinButtonPrevious;
+		case 3: return pinButtonNext;
 	}
 }
 
-//LARSZJWIK
 void checkButton() {
-  
+	if (digitalRead(pinButtonBack) == LOW || digitalRead(pinButtonEnter) == LOW || digitalRead(pinButtonPrevious) == LOW || digitalRead(pinButtonNext) == LOW) delay(debounceDelay);
+	
+	for (int i = 0; i <= 3; i++) {
+		buttonState[i] = false;
+		if (digitalRead(convertPin(i)) == LOW) buttonState[i] = true;
+		if (buttonState[i]) {
+			if (lastButtonState[i]) {
+				buttonState[i] = false;
+			} else {
+				lastButtonState[i] = true;
+			}
+		} else {
+			lastButtonState[i] = false;
+		}
+	}
 }
 
 
@@ -219,7 +227,6 @@ void setup() {
 	digitalWrite(9, HIGH);
 	pinMode(10, INPUT);
 	digitalWrite(10, HIGH);
-	checkButtons();
 
 	transmitter.enableTransmit(13);
 
@@ -240,23 +247,23 @@ void loop() {
 	switch (mode) {
 		case 0:
 			printTime(hour(currentTime), minute(currentTime), second(currentTime), day(currentTime), month(currentTime), year(currentTime), weekday(currentTime));
-			if (buttonState[2] == LOW || buttonState[3] == LOW) mode = 1;
-			if (buttonState[1] == LOW) mode = 2;
+			if (buttonState[2] || buttonState[3]) mode = 1;
+			if (buttonState[1]) mode = 2;
 			break;
 		case 1:
-			if (buttonState[0] == LOW) {
+			if (buttonState[0]) {
 				mode = 0;
 				break;
 			}
-			if (buttonState[1] == LOW) {
+			if (buttonState[1]) {
 				switchReceiver();
 			}
-			if (buttonState[2] == LOW) {
+			if (buttonState[2]) {
 				selectedReceiver--;
 				if (selectedReceiver < 0) selectedReceiver = 2;
 				Serial.println(selectedReceiver);
 			}
-			if (buttonState[3] == LOW) {
+			if (buttonState[3]) {
 				selectedReceiver++;
 				if (selectedReceiver > 2) selectedReceiver = 0;
 				Serial.println(selectedReceiver);
@@ -264,18 +271,18 @@ void loop() {
 			printRemote();
 			break;
 		case 2:
-			if (buttonState[0] == LOW) {
+			if (buttonState[0]) {
 				mode = 0;
 				break;
 			}
-			if (buttonState[1] == LOW) {
+			if (buttonState[1]) {
 
 			}
-			if (buttonState[2] == LOW) {
+			if (buttonState[2]) {
 				selectedMenuItem--;
 				if (selectedMenuItem < 0) selectedMenuItem = 2;
 			}
-			if (buttonState[3] == LOW) {
+			if (buttonState[3]) {
 				selectedMenuItem++;
 				if (selectedMenuItem > 2) selectedMenuItem = 0;
 			}
