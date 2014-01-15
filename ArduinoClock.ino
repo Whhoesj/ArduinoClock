@@ -173,26 +173,6 @@ void printHome() {
 	}
 }
 
-void printTime(int h, int m, int s, int d, int mo, int y, int dow) {
-	lcd.setCursor(0, 0);
-	if (h < 10) lcd.print(0);
-	lcd.print(h);
-	lcd.print(":");
-	if (m < 10) lcd.print(0);
-	lcd.print(m);
-	lcd.print(":");
-	if (s < 10) lcd.print(0);
-	lcd.print(s);
-	lcd.print("          ");
-	lcd.setCursor(0, 1);
-	lcd.print(String(d));
-	lcd.print(" - ");
-	lcd.print(String(mo));
-	lcd.print(" - ");
-	lcd.print(String(y));
-	lcd.print("    ");
-}
-
 void printRemote() {
 	lcd.setCursor(0, 0);
 	lcd.print(receiverName[selectedReceiver]);
