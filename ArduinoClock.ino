@@ -43,6 +43,7 @@ int lightMax = 255;
 int mode = 0;
 int modeAlarm = 0;
 int modeTime = 0;
+int lastMode = 0;
 
 int selectedMenuItem = 0;
 int selectedReceiver = 0;
@@ -160,8 +161,11 @@ void printHome() {
 	lcd.print(dayOfWeek[weekday(currentTime) - 2]);
 	lcd.print(" ");
 	lcd.print(day(currentTime));
+	lcd.print("-");
+	lcd.print(month(currentTime));
 	if (day(currentTime) < 10) lcd.print(" ");
-	lcd.print("      ");
+	if (month(currentTime) < 10) lcd.print(" ");
+	lcd.print("   ");
 	if (alarmEnabled) {
 		if (alarmHour < 10) lcd.print(0);
 		lcd.print(alarmHour);
@@ -395,13 +399,19 @@ void setup() {
 void loop() {
 	currentTime = now();
 	if (alarmEnabled && !alarmTrigger && alarmHour == hour(currentTime) && alarmMinute == minute(currentTime)) {
+		lastMode = mode;
 		mode = 6;
+		lcd.setCursor(0, 0);
+		lcd.print(" Alarm gaat af  ");
+		lcd.setCursor(0, 1);
+		lcd.print(" Even geduld... ");
 		transmitter.switchOn("10010", "10000");
 		transmitter.switchOn("10010", "01000");
 		transmitter.switchOn("10010", "00100");
 		for (int i = 0; i <= 2; i++) receiverState[i] = true;
 		alarmTrigger = true;
 	}
+	serialPC();
 	checkButton();
 	checkBacklight();
 	switch (mode) {
@@ -545,7 +555,7 @@ void loop() {
 		case 6:
 		//ALARM
 			if (buttonState[0]) {
-				mode = 0;
+				mode = lastMode;
 				alarmEnabled = 0;
 				alarmTrigger = false;
 			}
@@ -553,7 +563,16 @@ void loop() {
 
 			}
 			if (buttonState[2]) {
-
+				alarmMinute = minute(currentTime) + 5;
+				alarmHour = hour(currentTime);
+				if (alarmMinute > 59) {
+					alarmMinute -= 60;
+					alarmHour++;
+					if (alarmHour > 23) alarmHour = 0;
+				}
+				alarmEnabled = true;
+				alarmTrigger = false;
+				mode = lastMode;
 			}
 			if (buttonState[3]) {
 
