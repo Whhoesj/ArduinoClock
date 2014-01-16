@@ -25,7 +25,7 @@ public class Arduino {
             "COM3", // Windows
     };
     private SerialPort serialPort;
-    private OutputStream output;
+    private PrintWriter writer;
     private BufferedReader reader;
 
     public Arduino() throws NoArduinoException {
@@ -58,13 +58,13 @@ public class Arduino {
                     SerialPort.PARITY_NONE);
 
             // open the streams
-            output = serialPort.getOutputStream();
+            writer = new PrintWriter(serialPort.getOutputStream());
             reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 
         } catch (Exception e) {
             try {
                 reader.close();
-                output.close();
+                writer.close();
                 serialPort.close();
             } catch (Exception e1) {
             }
@@ -73,12 +73,13 @@ public class Arduino {
         }
     }
 
-    public OutputStream getOutputStream() throws IOException {
-        return serialPort.getOutputStream();
+    public void send(String s) {
+        writer.print(s);
+        writer.flush();
     }
 
-    public InputStream getInputStream() throws IOException {
-        return serialPort.getInputStream();
+    public String read() throws IOException {
+        return reader.readLine();
     }
 
 }
