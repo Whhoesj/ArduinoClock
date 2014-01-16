@@ -25,10 +25,12 @@ public class Server {
 
     public boolean run() throws IOException {
         System.out.println("Wachten op verbinding...");
-        socket = serverSocket.accept();
-        System.out.print("Verbonden met " + socket.getRemoteSocketAddress() + ". Commando... ");
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new PrintWriter(socket.getOutputStream());
+        //socket = serverSocket.accept();
+        //System.out.print("Verbonden met " + socket.getRemoteSocketAddress() + ". Commando... ");
+        //reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //writer = new PrintWriter(socket.getOutputStream());
+        reader = new BufferedReader(new InputStreamReader(System.in));
+        writer = new PrintWriter((System.out));
         String received = readLine();
         System.out.print(received + " ");
         if (received.equals("refresh")) {
